@@ -1,0 +1,94 @@
+# SQL & Power BI Data Warehouse Project
+
+## Project Overview
+This project demonstrates a **complete end-to-end Data Warehouse workflow** using SQL Server and Power BI.  
+It includes three layers of data processing (Bronze, Silver, Gold) and a Power BI dashboard for reporting.
+
+- **Bronze Layer:** Raw data ingestion from CSV files (CRM, ERP, Sales).  
+- **Silver Layer:** Cleaned and transformed tables ready for analytics.  
+- **Gold Layer:** Dimensional models (facts & dimensions) for reporting.  
+- **Power BI Dashboard:** Interactive reports and KPIs built on Gold layer views.
+
+---
+
+## Folder Structure
+
+
+---
+
+## Bronze Layer Tables  
+
+**Purpose:** Raw data storage, no transformations yet.  
+
+| Table Name           | Columns & Type | Description |
+|---------------------|----------------|------------|
+| `crm_cust_info`      | `cst_id` INT, `cst_key` NVARCHAR(50), `cst_firstname` NVARCHAR(50), `cst_lastname` NVARCHAR(50), `cst_marital_status` NVARCHAR(50), `cst_gndr` NVARCHAR(50), `cst_create_date` DATE | Raw customer info from CRM |
+| `crm_prd_info`       | `prd_id` INT, `prd_key` NVARCHAR(50), `prd_nm` NVARCHAR(50), `prd_cost` INT, `prd_line` NVARCHAR(50), `prd_start_dt` DATETIME, `prd_end_dt` DATETIME | Raw product info from ERP/CRM |
+| `crm_sales_details`  | `sls_ord_num` NVARCHAR(50), `sls_prd_key` NVARCHAR(50), `sls_cust_id` INT, `sls_order_dt` INT, `sls_ship_dt` INT, `sls_due_dt` INT, `sls_sales` INT, `sls_quantity` INT, `sls_price` INT | Raw sales transactions |
+| `erp_loc_a101`       | `cid` NVARCHAR(50), `cntry` NVARCHAR(50) | Customer location info |
+| `erp_cust_az12`      | `cid` NVARCHAR(50), `bdate` DATE, `gen` NVARCHAR(50) | Customer demographic info |
+| `erp_px_cat_giv2`    | `id` NVARCHAR(50), `cat` NVARCHAR(50), `subcat` NVARCHAR(50), `maintenance` NVARCHAR(50) | Product category info |
+
+---
+
+## Silver Layer Tables  
+
+**Purpose:** Cleaned and transformed tables, ready for analytics.  
+
+| Table Name           | Columns & Type | Description |
+|---------------------|----------------|------------|
+| `crm_cust_info`      | Same as Bronze + `dwh_create_date` DATETIME2 | Latest cleaned customer data, normalized gender & marital status |
+| `crm_prd_info`       | Same as Bronze + `cat_id` NVARCHAR(50), `dwh_create_date` DATETIME2 | Product keys extracted, product line mapped, end dates calculated |
+| `crm_sales_details`  | Same as Bronze + `dwh_create_date` DATETIME2 | Cleaned sales transactions with valid dates and sales_amount |
+| `erp_loc_a101`       | Same as Bronze + `dwh_create_date` DATETIME2 | Country names normalized |
+| `erp_cust_az12`      | Same as Bronze + `dwh_create_date` DATETIME2 | Gender normalized, invalid birth dates handled |
+| `erp_px_cat_giv2`    | Same as Bronze + `dwh_create_date` DATETIME2 | Cleaned product categories |
+
+---
+
+## Gold Layer Views  
+
+**Purpose:** Dimensional modeling for reporting.  
+
+| View Name          | Description |
+|-------------------|-------------|
+| `dim_customers`     | Customers dimension with unique keys, latest record, normalized gender & marital status |
+| `dim_products`      | Products dimension with unique keys, category/subcategory mapping, latest product version |
+| `fact_sales`        | Fact table linking customers & products with sales metrics, quantities, prices, and dates |
+
+### Column-Level Detail Example
+
+**`dim_customers`**
+| Column Name      | Data Type | Description |
+|-----------------|-----------|------------|
+| `customer_key`   | INT       | Surrogate key for dimension |
+| `customer_id`    | INT       | Original customer ID |
+| `customer_number`| NVARCHAR  | Customer code/key |
+| `Firstname`      | NVARCHAR  | Customer first name |
+| `Lastname`       | NVARCHAR  | Customer last name |
+| `Country`        | NVARCHAR  | Country name from ERP |
+| `Marital_status` | NVARCHAR  | Normalized marital status |
+| `gender`         | NVARCHAR  | Normalized gender |
+| `Birthday`       | DATE      | Customer birth date |
+| `Create_date`    | DATE      | Original creation date in CRM |
+
+---
+
+## How to Run the Project
+
+1. **Bronze Layer:** Run `bronze_load.sql` to load raw CSVs into Bronze tables.  
+2. **Silver Layer:** Run `silver_load.sql` to clean & transform Bronze tables.  
+3. **Gold Layer:** Run `gold_dim_views.sql` to create dimension & fact views.  
+4. **Power BI Dashboard:** Open `powerbi_dashboard/sales_analysis.pbix` to explore metrics.
+
+---
+
+## Key Features
+
+- Full ETL pipeline: Raw → Cleaned → Dimensional  
+- Data normalization (gender, marital status, product lines, countries)  
+- Fact table with consistent sales metrics  
+- Ready-to-use dashboard for analysis  
+
+---
+
