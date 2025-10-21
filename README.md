@@ -54,13 +54,18 @@ It includes **Bronze, Silver, and Gold layers** with **dimensional modeling** fo
 
 
 ## Folder Structure
-
 SQL-PowerBI-DataWarehouse-Project/
+
+
 ├── bronze_layer/            # Bronze SQL scripts
+
 ├── silver_layer/            # Silver SQL scripts
+
 ├── gold_layer/              # Gold SQL scripts & views
+
 ├── datasets/                # CSV source data
-└── project_documentation/   # README.md
+
+└── project_documentation/   # README.md 
 
 
 ---
